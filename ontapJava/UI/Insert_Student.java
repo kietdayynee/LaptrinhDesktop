@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import java.awt.Font;
 import java.awt.FlowLayout;
@@ -14,6 +15,12 @@ import javax.swing.JTextField;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JButton;
 
@@ -155,6 +162,73 @@ public class Insert_Student extends JFrame {
 		JButton btnDone = new JButton("Done");
 		btnDone.setFont(new Font("Times New Roman", Font.BOLD, 13));
 		panel_1.add(btnDone);
+		
+		
+		btnDone.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        insertData();
+		    }
+
+		    private void insertData() {
+		        String fullName = textField.getText();
+		        java.util.Date birthDate = dateChooser.getDate();
+		        String gender = textField_2.getText();
+		        String phoneNumber = textField_3.getText();
+
+		        // Kiểm tra xem kết nối đã được thiết lập thành công hay không
+		        try {
+		            Connection connection = conn_DB.getConnection();
+
+		            if (connection != null) {
+		                String query = "INSERT INTO student (name, birthday, gender, phonenumber) VALUES (?, ?, ?, ?)";
+
+		                PreparedStatement statement = connection.prepareStatement(query);
+		                statement.setString(1, fullName);
+		                statement.setDate(2, new java.sql.Date(birthDate.getTime()));
+		                statement.setString(3, gender);
+		                statement.setString(4, phoneNumber);
+
+		                int rowsInserted = statement.executeUpdate();
+		                if (rowsInserted > 0) {
+		                    System.out.println("A new student has been inserted!");
+		                    
+		                }
+
+		                statement.close();
+		                connection.close();
+		            } else {
+		                System.out.println("Connection is null. Cannot insert data.");
+		                
+		            }
+		        } catch (SQLException ex) {
+		            ex.printStackTrace();
+		        }
+		    }
+		
+
+				public void actionPerformed1(ActionEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+	        });
+		btnCancle.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        // Đóng cửa sổ hiện tại
+		        dispose();
+
+		        // Mở cửa sổ Home hoặc làm các bước cần thiết để quay về trang Home
+		        openHomePage();
+		    }
+
+		    private void openHomePage() {
+		        // Thực hiện các bước cần thiết để mở trang Home
+		        // Ví dụ: Tạo một đối tượng JFrame mới và hiển thị nó
+		        Home home = new Home();
+		        home.setVisible(true);
+		    }
+		});
 	}
 
 }
